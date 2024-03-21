@@ -1,6 +1,12 @@
 const { StatusCodes } = require("http-status-codes");
 const CustomError = require("../errors");
 const User = require("../models/User");
+const {
+  creatJwt,
+  verifyToken,
+  createCokie,
+  creatTokenUser,
+} = require("../utils");
 const login = async (req, res) => {
   const { email, password } = req.body;
   if (!email || !password) {
@@ -18,8 +24,9 @@ const login = async (req, res) => {
   if (!isValidPassword) {
     throw new CustomError.Unauthenticated("Not valid");
   }
-
-  res.status(StatusCodes.OK).json({ user });
+  const tokenUser = creatTokenUser(user);
+  createCokie(res, tokenUser);
+  res.status(StatusCodes.OK).json({ tokenUser });
 };
 const logout = async (req, res) => {
   res.send("logout");
@@ -37,6 +44,8 @@ const register = async (req, res) => {
   const isFirstAccuont = (await User.countDocuments({})) === 0;
   const role = isFirstAccuont ? "admin" : "user";
   const user = await User.create({ email, name, password, role });
+  const tokenUser = creatTokenUser(user);
+  createCokie(res, tokenUser);
   res.status(StatusCodes.CREATED).json({ user });
 };
 module.exports = { login, logout, register };
