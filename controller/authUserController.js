@@ -29,7 +29,12 @@ const login = async (req, res) => {
   res.status(StatusCodes.OK).json({ tokenUser });
 };
 const logout = async (req, res) => {
-  res.send("logout");
+  res.cookie("token", "logout", {
+    httpOnly: true,
+    expires: new Date(Date.now() + 60 * 1000),
+    signed: true,
+  });
+  res.status(StatusCodes.OK).json({ msg: "you logout" });
 };
 const register = async (req, res) => {
   const { email, name, password } = req.body;
