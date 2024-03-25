@@ -25,10 +25,12 @@ const updateUser = async (req, res) => {
     throw new CustomError.BadRequest("Please provide user");
   }
   const user = await User.findOne({ _id: req.user.userId });
+  console.log(user);
   user.email = email;
   user.name = name;
-  user.save();
-  const tokenUser = createTokenUser(req.user);
+  await user.save();
+  const tokenUser = createTokenUser(user);
+
   createCokie(res, tokenUser);
   res.status(StatusCodes.OK).json({ user: tokenUser });
 };

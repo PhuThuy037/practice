@@ -1,26 +1,18 @@
 const CustomError = require("../errors");
 const { verifyToken } = require("../utils");
 const authenticateUser = async (req, res, next) => {
-  let token;
-  const authHeader = req.headers.authorization;
-  if (authHeader && authHeader.startsWith("Bearer")) {
-    token = authHeader.split(" ")[1];
-  } else if (req.cookies.token) {
-    token = req.cookies.token;
-  }
-  if (!token) {
-    throw new CustomError.Unauthenticated("Authentication invalid");
-  }
-  try {
-    const payload = verifyToken(token);
-    req.user = {
-      userId: payload.user.userId,
-      role: payload.user.role,
-    };
+  const token = req.signedCookies.token;
 
+  if (!token) {
+    throw new CustomError.Unauthenticated("Authentication Invalid");
+  }
+
+  try {
+    const { name, userId, role } = verifyToken(token);
+    req.user = { name, userId, role };
     next();
   } catch (error) {
-    throw new CustomError.Unauthenticated("Authentication invalid");
+    throw new CustomError.Unauthenticated("Authentication Invalid");
   }
 };
 const authorizeRoles = (...roles) => {
