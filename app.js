@@ -6,7 +6,7 @@ const app = express();
 
 // router
 const authRouter = require("./route/Auth");
-
+const UserRouter = require("./route/userRoute");
 // db
 const connectDb = require("./db/connect");
 
@@ -17,8 +17,8 @@ app.use(express.json());
 app.use(cookieParser(process.env.SECRET));
 
 // route
-app.use("/api/v1", authRouter);
-
+app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/user", UserRouter);
 // start mongo and sever
 const start = async () => {
   try {
