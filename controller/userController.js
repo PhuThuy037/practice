@@ -8,11 +8,13 @@ const showAllUser = async (req, res) => {
   res.status(StatusCodes.OK).json({ user });
 };
 const showSingleUser = async (req, res) => {
-  const user = await User.findOne({ _id: req.params.userId });
+  const id = req.params.id;
+  const user = await User.findOne({ _id: id }).select("-password");
   if (!user) {
-    throw new CustomError.NotFound(`No user with id  ${req.params.userId}`);
+    throw new CustomError.NotFound(`No user with id  ${id}`);
   }
-  checkPermission(req.user, user._id);
+
+  checkPermission(id, user._id);
 
   res.status(StatusCodes.OK).json({ user });
 };
@@ -25,14 +27,14 @@ const updateUser = async (req, res) => {
     throw new CustomError.BadRequest("Please provide user");
   }
   const user = await User.findOne({ _id: req.user.userId });
-  console.log(user);
+
   user.email = email;
   user.name = name;
   await user.save();
   const tokenUser = createTokenUser(user);
-
+  console.log(tokenUser);
   createCokie(res, tokenUser);
-  res.status(StatusCodes.OK).json({ user: tokenUser });
+  res.status(StatusCodes.OK).json({ email, name });
 };
 const updateUserPassword = async (req, res) => {
   const { oldPassword, newPassword } = req.body;

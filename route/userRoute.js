@@ -12,15 +12,20 @@ const {
   authenticatedUser,
   authorziePermission,
 } = require("../middlewares/authentication");
-const { authenticateUser } = require("../middlewares/full-auth");
+// const {
+//   authenticatedUser,
+//   authorziePermission,
+// } = require("../middlewares/full-auth");
 
 router
   .route("/getAllUser")
-  .get(authenticateUser, authorziePermission("admin"), showAllUser);
+  .get(authenticatedUser, authorziePermission("admin"), showAllUser);
 
-router.route("/showMe").get(authenticateUser, showCurrentUser);
-router.route("/updateUser").post(authenticatedUser, updateUser);
-router.route("/updateUserPassword").post(authenticatedUser, updateUserPassword);
-router.route("/:id").get(authenticateUser, showSingleUser);
+router.route("/showMe").get(authenticatedUser, showCurrentUser);
+router.route("/updateUser").patch(authenticatedUser, updateUser);
+router
+  .route("/updateUserPassword")
+  .patch(authenticatedUser, updateUserPassword);
+router.route("/:id").get(authenticatedUser, showSingleUser);
 
 module.exports = router;

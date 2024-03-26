@@ -5,7 +5,7 @@ const {
   creatJwt,
   verifyToken,
   createCokie,
-  creatTokenUser,
+  createTokenUser,
 } = require("../utils");
 const login = async (req, res) => {
   const { email, password } = req.body;
@@ -24,7 +24,7 @@ const login = async (req, res) => {
   if (!isValidPassword) {
     throw new CustomError.Unauthenticated("Not valid");
   }
-  const tokenUser = creatTokenUser(user);
+  const tokenUser = createTokenUser(user);
   createCokie(res, tokenUser);
   res.status(StatusCodes.OK).json({ tokenUser });
 };
@@ -49,7 +49,7 @@ const register = async (req, res) => {
   const isFirstAccuont = (await User.countDocuments({})) === 0;
   const role = isFirstAccuont ? "admin" : "user";
   const user = await User.create({ email, name, password, role });
-  const tokenUser = creatTokenUser(user);
+  const tokenUser = createTokenUser(user);
   createCokie(res, tokenUser);
   res.status(StatusCodes.CREATED).json({ user });
 };
